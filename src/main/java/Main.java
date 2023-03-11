@@ -27,22 +27,17 @@ public class Main {
     }
 
     public static double testSet(CollaborativeFiltering cf, List<Review> reviews){
-        HashMap<Integer, Integer>reviewID = new HashMap<>();
         double size = Math.ceil(reviews.size()* 0.2);
-        Random rand = new Random();
         double avgFalse = 0;
         int num = 0;
         for(int i = 0; i <  size; i++){
-            do {
-                num = rand.nextInt(reviews.size());
-            } while(reviewID.containsKey(num));
-            reviewID.put(num, 1);
-            Review randReview = reviews.get(num);
-            double predictRating = cf.calculateRating(randReview.getUser_id(), randReview.getBusiness_id());
-            double actualRating = randReview.getStars();
-            avgFalse += Math.abs(predictRating - actualRating);
+            double star = randomPrediction(cf, reviews);
+            if(star >0){
+                avgFalse += star;
+                num += 1;
+            }
         }
-        return avgFalse / size;
+        return avgFalse / num;
     }
     public static void main(String[] args) throws IOException {
         List<Review> reviews = processFile("./input/yelp_academic_dataset_review.json");
