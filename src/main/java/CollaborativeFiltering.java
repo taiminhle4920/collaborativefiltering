@@ -1,6 +1,4 @@
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class CollaborativeFiltering {
@@ -65,6 +63,51 @@ public class CollaborativeFiltering {
             }
         }
         return numerator / denominator;
+    }
+
+    public double calculateRating2(String userId, String businessId) {
+        double numerator = 0.0;
+        double denominator = 0.0;
+        HashMap<String, Integer> currUser = this.userMapping.get(userId);
+        for (Map.Entry<String, HashMap<String, Integer>> users : this.userMapping.entrySet()) {
+            if (users.getKey() == userId) {
+                continue;
+            }
+            HashMap<String, Integer> iteratingUser = users.getValue();
+            double similarity [] = findSimilarity(currUser, iteratingUser, businessId);
+            if (similarity == null) {
+                continue;
+            }
+            numerator += similarity[0];
+            denominator += similarity[1];
+        }
+        return numerator / denominator;
+    }
+
+    public double[] findSimilarity(HashMap<String, Integer> curr, HashMap<String, Integer> iter,
+                                   String businessId) {
+        if (!iter.containsKey(businessId)) {
+            return null;
+        }
+        ArrayList<String> key1 = new ArrayList<>(curr.keySet());
+        ArrayList<String> key2 = new ArrayList<>(iter.keySet());
+        HashSet<String> totalBusiness = new HashSet<>();
+        totalBusiness.addAll(key1);
+        totalBusiness.addAll(key2);
+        double totalBusinessCounts = totalBusiness.size();
+        double commonBusinessCounts = 0.0;
+        for (String s1 : key1 ) {
+            for (String s2 : key2 ) {
+                if (s1.equals(s2)) {
+                    commonBusinessCounts += 1.0;
+                }
+            }
+        }
+        double iter_rating = iter.get(businessId);
+        double common = (commonBusinessCounts / totalBusinessCounts) * iter_rating;
+        double fraction = commonBusinessCounts / totalBusinessCounts;
+        double ret [] = new double[]{common, fraction};
+        return ret;
     }
 
 }

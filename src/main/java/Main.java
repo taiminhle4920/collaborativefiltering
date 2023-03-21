@@ -2,7 +2,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -18,7 +17,7 @@ public class Main {
     public static double randomPrediction(CollaborativeFiltering cf, List<Review> reviews) {
         Random rand = new Random();
         Review randReview = reviews.get(rand.nextInt(reviews.size()));
-        double predictRating = cf.calculateRating(randReview.getUser_id(), randReview.getBusiness_id());
+        double predictRating = cf.calculateRating2(randReview.getUser_id(), randReview.getBusiness_id());
         double actualRating = randReview.getStars();
         System.out.print(randReview);
         System.out.println("predicted_rating: " + predictRating);
@@ -41,6 +40,7 @@ public class Main {
     }
     public static void main(String[] args) throws IOException {
         List<Review> reviews = processFile("./input/yelp_academic_dataset_review.json");
+//        System.out.println(reviews);
         CollaborativeFiltering cf = new CollaborativeFiltering(reviews);
         System.out.println("Average false is plus or minus: " + testSet(cf, reviews));
     }
